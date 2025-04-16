@@ -89,16 +89,6 @@ int main(void)
     trigger_setup();
     system_init();
 
-     /* Uncomment this to get a HELLO message for debug */
-    /*
-    putch('h');
-    putch('e');
-    putch('l');
-    putch('l');
-    putch('o');
-    putch('\n');
-    */
-
     simpleserial_init();
     simpleserial_addcmd('p', 32, sign);
     simpleserial_addcmd('k', 32, gen_key);

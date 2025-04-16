@@ -50,61 +50,48 @@ uint8_t gen_key(uint8_t* k, uint8_t len)
 {
     indcpa_keypair_derand(NULL, sk, k);
     //because of 128-bytes read and write buffer, dividing the output to chunks
-	simpleserial_put('r', 128, sk);
-	simpleserial_put('r', 128, sk + 128);
-	simpleserial_put('r', 128, sk + 256);
-	return 0x00;
+    simpleserial_put('r', 128, sk);
+    simpleserial_put('r', 128, sk + 128);
+    simpleserial_put('r', 128, sk + 256);
+    return 0x00;
 }
 
 uint8_t decaps(uint8_t* ct, uint8_t len)
 {
     shake128(c, KYBER_POLYCOMPRESSEDBYTES_DU, ct, len);
     masked_indcpa_dec(NULL, c, sk);
-	simpleserial_put('r', 0, dummy);
-	return 0x00;
+    simpleserial_put('r', 0, dummy);
+    return 0x00;
 }
 
 
 uint8_t set_prng_off(uint8_t* x, uint8_t len)
 {
-	prng_off = 1;
-	return 0x00;
+    prng_off = 1;
+    return 0x00;
 }
 
 
 uint8_t set_prng_on(uint8_t* x, uint8_t len)
 {
-	prng_off = 0;
-	return 0x00;
+    prng_off = 0;
+    return 0x00;
 }
 
 
 int main(void)
 {
     platform_init();
-	init_uart();
-	trigger_setup();
+    init_uart();
+    trigger_setup();
     system_init();
 
- 	/* Uncomment this to get a HELLO message for debug */
-	/*
-	putch('h');
-	putch('e');
-	putch('l');
-	putch('l');
-	putch('o');
-	putch('\n');
-	*/
+    simpleserial_init();
+    simpleserial_addcmd('p', 32, decaps);
+    simpleserial_addcmd('k', 32, gen_key);
+    simpleserial_addcmd('x', 0, set_prng_off);
+    simpleserial_addcmd('q', 0, set_prng_on);
 
-	simpleserial_init();
-	simpleserial_addcmd('p', 32, decaps);
-#ifdef DEBUG
-	simpleserial_addcmd('j', 32, test_basemul);
-#endif
-	simpleserial_addcmd('k', 32, gen_key);
-	simpleserial_addcmd('x', 0, set_prng_off);
-	simpleserial_addcmd('q', 0, set_prng_on);
-
-	while(1)
-		simpleserial_get();
+    while(1)
+        simpleserial_get();
 }
