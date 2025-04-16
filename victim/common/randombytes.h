@@ -20,6 +20,20 @@ extern "C" {
 #define randombytes     PQCLEAN_randombytes
 int randombytes(uint8_t *output, size_t n);
 
+extern int prng_off;
+
+inline uint32_t rand32() {
+  uint32_t rand;
+  if (prng_off){
+    return 0;
+  }
+  else
+  {
+    randombytes((uint8_t*) &rand, sizeof(rand));
+    return rand;
+  }
+}
+
 #ifdef __cplusplus
 }
 #endif

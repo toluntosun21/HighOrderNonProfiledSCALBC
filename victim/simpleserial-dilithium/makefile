@@ -30,29 +30,26 @@
 
 # Target file name (without extension).
 # This is the name of the compiled .hex file.
-TARGET = simpleserial-kyber
+TARGET = simpleserial-dilithium
 CRYPTO_TARGET = NONE
 
 
 # List C source files here.
 # Header files (.h) are automatically pulled in.
-SRC += simpleserial-kyber.c
+SRC += simpleserial-dilithium.c
 
 # -----------------------------------------------------------------------------
-SRC += cbd.c
-ASRC += fastbasemul.S
-ASRC += fastinvntt.S
-ASRC += fastntt.S
-SRC += indcpa.c
-SRC += masked_indcpa.c
-SRC += masked_utils.c
+SRC += sign.c
+SRC += masked_sign.c
+SRC += masking_interface.c
 SRC += ntt.c
 SRC += poly.c
-ASRC += reduce.S
+SRC += polyvec.c
+SRC += masked_polyvec_operations.c
+SRC += reduce.c
 
-SRC += symmetric-fips202.c
 SRC += fips202.c
-ASRC += keccakf1600.S
+SRC += symmetric-shake.c
 
 SRC += randombytes.c
 
@@ -68,19 +65,8 @@ ifeq ($(REDUCTION),CWLITEARM)
   CDEFS += -DSTM32F3XX
 endif
 
-CDEFS += -DNSHARES=$(NSHARES)
+CDEFS += -DN_SHARES=$(NSHARES)
 
-ifeq ($(REDUCTION),PLANTARD)
-  VPATH += src/plantard
-  EXTRAINCDIRS += src/plantard
-  $(info PLANTARD REDUCTION)
-else ifeq ($(REDUCTION),MONTGOMERY)
-  VPATH += src/montgomery
-  EXTRAINCDIRS += src/montgomery
-  $(info MONTGOMERY REDUCTION)
-else ifneq ($(MAKECMDGOALS),clean)
-  $(error Invalid or empty REDUCTION: $(REDUCTION). Valid reductions: MONTGOMERY, PLANTARD)
-endif
 
 
 #Add simpleserial project to build

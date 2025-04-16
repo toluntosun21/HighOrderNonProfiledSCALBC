@@ -39,6 +39,9 @@
  *              - const unsigned char *sk: pointer to input secret key (of
  *length KYBER_INDCPA_SECRETKEYBYTES)
  **************************************************/
+/***************************************************
+  The functon is minimized for SCA
+***************************************************/
 void __attribute__((noinline))
 masked_indcpa_dec(unsigned char *m, // secret
                   const unsigned char *c,    // public

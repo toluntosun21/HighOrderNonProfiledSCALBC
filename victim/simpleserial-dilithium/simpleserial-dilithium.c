@@ -21,23 +21,22 @@
 #include "hal.h"
 #include <stdint.h>
 #include <stdlib.h>
-
 #include "simpleserial.h"
-
 #include "params.h"
-#include "indcpa.h"
-#include "masked_indcpa.h"
+#include "polyvec.h"
+#include "masking_interface.h"
 #include "fips202.h"
 
 #define KYBER_POLYCOMPRESSEDBYTES_DU (320)
 
-uint8_t sk[KYBER_POLYBYTES]; // 128*3
-uint8_t c[KYBER_POLYCOMPRESSEDBYTES_DU];
+uint8_t sk[N*sizeof(int32_t)]; // 1024
+polyvecl s1;
+masked_polyvecl ms1;
+
 
 uint8_t dummy[1];
 
 int prng_off = 0;
-
 
 void system_init()
 {
@@ -48,63 +47,64 @@ void system_init()
 
 uint8_t gen_key(uint8_t* k, uint8_t len)
 {
-    indcpa_keypair_derand(NULL, sk, k);
+    crypto_sign_keypair_derand(&s1, NULL, sk, k); // only returns s1[0] in NTT domain
     //because of 128-bytes read and write buffer, dividing the output to chunks
-	simpleserial_put('r', 128, sk);
-	simpleserial_put('r', 128, sk + 128);
-	simpleserial_put('r', 128, sk + 256);
-	return 0x00;
+    simpleserial_put('r', 128, sk);
+    simpleserial_put('r', 128, sk + 128);
+    simpleserial_put('r', 128, sk + 256);
+    simpleserial_put('r', 128, sk + 384);
+    simpleserial_put('r', 128, sk + 512);
+    simpleserial_put('r', 128, sk + 640);
+    simpleserial_put('r', 128, sk + 768);
+    simpleserial_put('r', 128, sk + 896);
+    return 0x00;
 }
 
-uint8_t decaps(uint8_t* ct, uint8_t len)
+uint8_t sign(uint8_t* c, uint8_t len)
 {
-    shake128(c, KYBER_POLYCOMPRESSEDBYTES_DU, ct, len);
-    masked_indcpa_dec(NULL, c, sk);
-	simpleserial_put('r', 0, dummy);
-	return 0x00;
+    mask_polyvecl(&ms1, &s1);
+    masked_crypto_sign_signature(c, &ms1);
+    simpleserial_put('r', 0, dummy);
+    return 0x00;
 }
-
 
 uint8_t set_prng_off(uint8_t* x, uint8_t len)
 {
-	prng_off = 1;
-	return 0x00;
+    prng_off = 1;
+    return 0x00;
 }
 
 
 uint8_t set_prng_on(uint8_t* x, uint8_t len)
 {
-	prng_off = 0;
-	return 0x00;
+    prng_off = 0;
+    return 0x00;
 }
 
 
 int main(void)
 {
     platform_init();
-	init_uart();
-	trigger_setup();
+    init_uart();
+    trigger_setup();
     system_init();
 
- 	/* Uncomment this to get a HELLO message for debug */
-	/*
-	putch('h');
-	putch('e');
-	putch('l');
-	putch('l');
-	putch('o');
-	putch('\n');
-	*/
+     /* Uncomment this to get a HELLO message for debug */
+    /*
+    putch('h');
+    putch('e');
+    putch('l');
+    putch('l');
+    putch('o');
+    putch('\n');
+    */
 
-	simpleserial_init();
-	simpleserial_addcmd('p', 32, decaps);
-#ifdef DEBUG
-	simpleserial_addcmd('j', 32, test_basemul);
-#endif
-	simpleserial_addcmd('k', 32, gen_key);
-	simpleserial_addcmd('x', 0, set_prng_off);
-	simpleserial_addcmd('q', 0, set_prng_on);
+    simpleserial_init();
+    simpleserial_addcmd('p', 32, sign);
+    simpleserial_addcmd('k', 32, gen_key);
+    simpleserial_addcmd('x', 0, set_prng_off);
+    simpleserial_addcmd('q', 0, set_prng_on);
 
-	while(1)
-		simpleserial_get();
+    while(1)
+        simpleserial_get();
 }

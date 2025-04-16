@@ -22,20 +22,6 @@
 #include <stdint.h>
 
 
-extern int prng_off;
-
-
-inline uint32_t rand32() {
-  uint32_t rand;
-  if (prng_off){
-    return 0;
-  }
-  else
-  {
-    randombytes((uint8_t*) &rand, sizeof(rand));
-    return rand;
-  }
-}
 
 inline void rand_q(int16_t v[2]) {
   uint32_t r;
