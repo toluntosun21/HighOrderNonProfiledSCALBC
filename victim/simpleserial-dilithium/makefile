@@ -61,7 +61,7 @@ VPATH += ../common
 EXTRAINCDIRS += src
 EXTRAINCDIRS += ../common
 
-ifeq ($(REDUCTION),CWLITEARM)
+ifeq ($(PLATFORM),CWLITEARM)
   CDEFS += -DSTM32F3XX
 endif
 

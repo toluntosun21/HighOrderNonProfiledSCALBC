@@ -2,7 +2,9 @@
 #include "params.h"
 #include "polyvec.h"
 #include "fips202.h"
+#include "randombytes.h"
 
+extern inline uint32_t rand32();
 
 
 int32_t center(int32_t x){
