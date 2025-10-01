@@ -1,0 +1,14 @@
+*.vscode*
+*__pycache__*
+*.dep*
+*objdir*
+*.bin
+*.o
+*.so
+*.elf
+*.eep
+*.hex
+*.lss
+*.map
+*.sym
+*.ets
