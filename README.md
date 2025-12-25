@@ -6,15 +6,15 @@ Efficient first and higher order side-channel attacks against Lattice-Based Post
 Source code for the [research paper](https://cic.iacr.org/p/2/3/31/pdf).
 
 This repository provides a set of tools to perform non-profiled side-channel analysis attacks against (masked) implementations of Lattice-Based Cryptography (LBC):
-* `cw/victim`: A ChipWhisperer-based Kyber768 victim project.
-* `cw/attack`: CPA, HOCPA against Kyber768 polynomial multiplication and a lattice attack on top of the side-channel analysis attacks.
-* `simulations`: HOCPA and optimal correlation simulations for NTT-based polynomial multiplication in LBC for different scenarios.
+* `victim`: ChipWhisperer-based Kyber768 and Dilithium3 victim projects.
+* `attack`: CPA, HOCPA against Kyber768 and Dilithium3 polynomial multiplication and a lattice attack on top of the side-channel analysis attacks.
 
 ## Practical Experiments
 ### Victim
 
-* A first-order masked Kyber768 victim project that is developed for the [ChipWhisperer Framework](https://github.com/newaetech/chipwhisperer).
-* The victim only contains the polynomial multiplication part to practise non-profiled attacks.
+* An arbitrary order masked Kyber768 victim project and an arbitrary order masked Dilithium3.
+* Both victims are developed for the [ChipWhisperer Framework](https://github.com/newaetech/chipwhisperer).
+* The victims only contain the polynomial multiplication part to practise non-profiled attacks against NTT-based polynomial multiplication.
 * Masked Kyber768 implementation is from [uclcrypto/pqm4_masked/](https://github.com/uclcrypto/pqm4_masked/) `5fe90ba`. Masked Dilithium3 implementation is from [fragerar/tches24_masked_Dilithium](https://github.com/fragerar/tches24_masked_Dilithium/tree/master) `5b5fd32`.
 
 ### Attack
